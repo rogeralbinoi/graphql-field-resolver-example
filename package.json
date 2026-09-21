@@ -1,0 +1,26 @@
+{
+  "name": "graphql-field-resolver-example",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Exemplo de field resolver no Apollo Server: agregando dois datasources em uma query",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/server": "^5.5.1",
+    "dataloader": "^2.2.3",
+    "graphql": "^16.14.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
