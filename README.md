@@ -1,6 +1,6 @@
 # Field Resolver no Apollo Server
 
-Exemplo executável do post **Trabalhando com Field Resolver no Apollo Server**.
+Exemplo executável do post [**Trabalhando com Field Resolver no Apollo Server**](https://rogeralbino.dev.br/posts/trabalhando-com-field-resolvers-no-apollo-server).
 
 A ideia: agregar dados de dois datasources diferentes em uma única query GraphQL, e só pagar pela
 segunda chamada quando o cliente realmente pedir aquele campo.
