@@ -6,8 +6,8 @@ export type Loaders = {
 }
 
 // Junta todos os load() que aconteceram no mesmo tick do event loop em uma
-// unica chamada REST. Sem isso, uma query com 5 posts faria 5 requests de
-// comentarios -- o problema N+1.
+// única chamada REST. Sem isso, uma query com 5 posts faria 5 requests de
+// comentários: o problema N+1.
 export const createCommentsLoader = () =>
   new DataLoader<string, Comment[]>(async (postIds) => {
     const comments = await getCommentsByPostIds(postIds)

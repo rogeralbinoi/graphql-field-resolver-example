@@ -9,7 +9,7 @@ segunda chamada quando o cliente realmente pedir aquele campo.
 - `Post.comments` é um **field resolver**: busca os comentários em `/comments?postId=:id`, usando o
   `id` que veio do `parent`
 
-No schema isso não aparece — para quem consome a API, `comments` é só mais um campo de `Post`.
+No schema isso não aparece: para quem consome a API, `comments` é só mais um campo de `Post`.
 
 A "API Rest" aqui é o [JSONPlaceholder](https://jsonplaceholder.typicode.com).
 
@@ -42,7 +42,7 @@ query {
 -> GET /posts/1
 ```
 
-Uma request. Nenhuma chamada a `/comments` — o resolver de `comments` nem foi executado.
+Uma request e nenhuma chamada a `/comments`. Ou seja, o resolver de `comments` nem foi executado.
 
 **2. Pedindo o campo, a segunda chamada acontece.**
 
@@ -81,7 +81,7 @@ query {
 -> GET /comments?postId=1&postId=2&postId=3&postId=4&postId=5
 ```
 
-São 5 posts, então o resolver de `comments` roda 5 vezes — mas o `DataLoader` junta os 5 `load()` que
+São 5 posts, então o resolver de `comments` roda 5 vezes, mas o `DataLoader` junta os 5 `load()` que
 aconteceram no mesmo tick do event loop em uma chamada só. Duas requests em vez de seis.
 
 ## Estrutura
@@ -101,27 +101,29 @@ Aqui o resolver map cabe em um arquivo. Em um schema de verdade o padrão é uma
 Dois pontos que valem a leitura do código:
 
 - `title` e `content` não têm resolver em `resolvers.ts`. Quando um campo não tem resolver, o Apollo usa
-  o *default resolver*, que é basicamente `(parent, args, contextValue, info) => parent[info.fieldName]`.
+  o *default resolver*, que é basicamente `(parent, args, context, info) => parent[info.fieldName]`.
   Como o service já devolve essas propriedades, não há o que escrever.
 - `context` em `index.ts` é uma **função**, chamada a cada request. É isso que garante um loader novo por
   request. Um loader global faria o cache dele vazar entre usuários diferentes.
 
 ## Diferenças em relação ao código do post
 
-O post é de 2021 e usa o Apollo Server 2/3. Este exemplo está no Apollo Server 5:
+O post usa a mesma stack deste repositório (`@apollo/server` 5 com `startStandaloneServer`, TypeScript e
+ESM), então as diferenças são poucas:
 
-| Post | Aqui |
-| --- | --- |
-| `apollo-server` | `@apollo/server` + `startStandaloneServer` |
-| `context` no construtor do `ApolloServer` | `context` vai em `startStandaloneServer(server, { context })` |
-| terceiro argumento chamado `context` | chamado `contextValue` |
-| CommonJS (`require`) | ESM + TypeScript |
-| — | Node 20+ obrigatório |
+- organização: aqui o resolver map fica em um arquivo só (`src/resolvers.ts`), e no post é uma pasta por
+  tipo (`resolvers/Query/post.ts`, `resolvers/Post/comments.ts`) e um `context.ts` separado, com o service
+  e o loader em `services/blog.ts` e `loaders/comments.ts`;
+- endpoint dos comentários: o post fala em `/posts/:id/comments`, mas aqui é `/comments?postId=:id`,
+  porque o JSONPlaceholder aceita vários `postId` na mesma chamada e é isso que permite o batch do
+  DataLoader;
+- DataLoader: no post, o field resolver aparece primeiro sem DataLoader (`getCommentsByPostId`) e depois
+  com DataLoader, e aqui ele já está direto na versão com DataLoader.
 
 Uma pegadinha de instalação: `npm install graphql` hoje traz a v17, mas o `@apollo/server` 5 pede
 `graphql@^16.11.0`. Por isso o `package.json` fixa `graphql@^16.14.2`.
 
 ## Referências
 
-- [Resolvers — Apollo Server](https://www.apollographql.com/docs/apollo-server/data/resolvers)
+- [Resolvers (Apollo Server)](https://www.apollographql.com/docs/apollo-server/data/resolvers)
 - [DataLoader](https://github.com/graphql/dataloader)

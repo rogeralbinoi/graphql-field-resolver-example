@@ -5,10 +5,10 @@ export type Context = {
   loaders: Loaders
 }
 
-// Post.title e Post.content nao aparecem aqui de proposito: quando um campo
-// nao tem resolver, o Apollo usa o default resolver, que e basicamente
-// (parent, args, contextValue, info) => parent[info.fieldName].
-// Como getPostById ja devolve title e content, isso basta.
+// Post.title e Post.content não aparecem aqui de propósito: quando um campo
+// não tem resolver, o Apollo usa o default resolver, que é basicamente
+// (parent, args, context, info) => parent[info.fieldName].
+// Como getPostById já devolve title e content, isso basta.
 export const resolvers = {
   Query: {
     post: (_parent: unknown, args: { id: string }): Promise<Post> => getPostById(args.id),
@@ -17,10 +17,10 @@ export const resolvers = {
   },
 
   Post: {
-    // O field resolver de comments. Repare que o id nao vem dos args da query,
-    // vem do parent -- o Post que Query.post (ou Query.posts) ja carregou.
-    // E ele so executa se o campo comments aparecer na query.
-    comments: (parent: Post, _args: unknown, contextValue: Context): Promise<Comment[]> =>
-      contextValue.loaders.comments.load(parent.id),
+    // O field resolver de comments. Repare que o id não vem dos args da query,
+    // vem do parent (o Post que Query.post ou Query.posts já carregou).
+    // E ele só executa se o campo comments aparecer na query.
+    comments: (parent: Post, _args: unknown, context: Context): Promise<Comment[]> =>
+      context.loaders.comments.load(parent.id),
   },
 }

@@ -16,7 +16,7 @@ export type Comment = {
 type RestPost = { id: number; title: string; body: string }
 type RestComment = { postId: number; id: number; name: string; email: string; body: string }
 
-// Loga toda chamada REST para ficar visivel, no terminal, quais datasources
+// Loga toda chamada REST para ficar visível, no terminal, quais datasources
 // cada query tocou.
 const get = async <T>(path: string): Promise<T> => {
   console.log('-> GET', path)
@@ -48,7 +48,7 @@ export const getPostById = async (id: string): Promise<Post> =>
 export const getPosts = async (): Promise<Post[]> =>
   (await get<RestPost[]>('/posts?_limit=5')).map(toPost)
 
-// A API aceita varios postId na mesma chamada, e e isso que permite o batch
+// A API aceita vários postId na mesma chamada, e é isso que permite o batch
 // do DataLoader: /comments?postId=1&postId=2&postId=3
 export const getCommentsByPostIds = async (postIds: readonly string[]): Promise<Comment[]> => {
   const query = postIds.map((postId) => `postId=${postId}`).join('&')
